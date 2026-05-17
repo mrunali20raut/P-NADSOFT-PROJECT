@@ -99,3 +99,130 @@ sudo systemctl enable jenkins
 sudo systemctl start jenkins
 sudo systemctl status jenkins
 
+5. add port 8080 TCp in security grp (edit inbound rule)
+6. paste public ip in browser : 8080
+7. for admin pass – sudo cat /var/lib/jenkins/secrets/initialAdminPassword 
+67cadeed3bcb4f77bc8e2a0cf8dc4ef1
+8. set user pass for Jenkins: Admin   Admin@123   email-mrunali20raut 
+Admin   @123
+Jenkin url : http://13.234.20.68:8080/ 
+9. as I am doing for java application we have to install maven (we can do it in two ways by directly installing in machine or as a global tool in jenkins machine) I am doing it by using as a global tool in Jenkins (manage Jenkins->tools->add maven)
+Note : version Maven-3.9.14,  Jenkins-2.541.13
+10.  setup docker using Jenkins
+curl -fsSL get.docker.com | /bin/bash
+11.add user to docker group
+sudo usermod -aG docker jenkins
+12: restart Jenkins
+sudo systemctl restart Jenkins
+13.  Create EKS Management Host in AWS
+1.	Launch new Ubuntu VM using AWS Ec2 ( t2.micro )
+2.	Connect to machine and install kubectl using below commands
+This machine is used to launch EKS cluster in AWS
+Kubectl is a cli which is use to communicate with kubernetes cluster
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin
+kubectl version --short –client
+14. Install AWS CLI latest version using below commands
+sudo apt install unzip
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws –version
+15. Install eksctl using below commands
+Ekctl is a command line utilty to create the k8 cluster from the cli
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+16. Create IAM role & attach to EKS Management Host
+AdministratorAccess
+
+AmazonEC2FullAccess
+
+AmazonVPCFullAccess
+
+AWSCloudFormationFullAccess
+
+IAMFullAccess
+
+1.	Create New Role using IAM service ( Select Usecase - ec2 )
+2.	Add above permissions for the role
+o	Administrator - acces
+3.	Enter Role Name (eksroleec2)
+4.	Attach created role to EKS Management Host (Select EC2 => Actions=>Click on Security => Modify IAM Role => attach IAM role we have created)
+5.	Attach created role to Jenkins Machine (Select EC2 => Click on Security => Modify IAM Role => attach IAM role we have created)
+17. Create EKS Cluster using eksctl
+=> eksctl create cluster --name mr-cluster --region ap-south-1 --node-type c7i-flex.large --zones ap-south-1a,ap-south-1b
+
+=> node-type is nothing but the instance type
+it is going to communicate with EKS service and it is going to create cluster
+it will create the cloud formation stack, EKS cluster, worker nodes and attached the worker node tour control plane which is provided by AWS EKS
+
+	Kubectl get nodes
+	kubectl get all
+18. Install AWS CLI in JENKINS Server
+sudo apt install unzip 
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+if unzip not found u can install it with sudo apt install unzip 
+sudo ./aws/install
+aws –version
+19. Install Kubectl in JENKINS Server
+So that jenkins will connect with the k8 cluster by using kubectl for deployment process
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin
+kubectl version --short --client
+20. Update EKS Cluster Config File in Jenkins Server
+Integrating Jenkins and k8 cluster for that we need to take the k8 cluster config file and we need to configure into jenkins machine, why because my Jenkins machine should communicate wirh the k8 cluster to do the deployment, 
+how the Jenkins machine will know whre is the k8 cluster-> cluster configuration we need to update in the Jenkins machine , cluster configuration will be available in kube config file if you keep this file in Jenkins machine then Jenkins will know whr is the k8 cluster then Jenkins machine will deploy in K8 directly
+kubeconfig file contains k8cluster info
+1.	 Execute below command in Eks Management host & copy kube config file data
+ cat .kube/config
+2.	Execute below commands in Jenkins Server and paste kube config file
+ cd /var/lib/jenkins
+ sudo mkdir .kube
+ sudo vi .kube/config
+3.	Go in insert mode by i key
+4.	Paste the data of  .kube/config file save and exit by esc :wq enter 
+5.	Execute below commands in Jenkins Server and paste kube config file for ubuntu user to check EKS Cluster info
+aws eks update-kubeconfig --region ap-south-1 --name <your-eks-cluster-name>
+aws eks update-kubeconfig --region ap-south-1 --name mr-cluster
+
+=> kubectl get nodes
+
+
+
+====================================
+Configure DockerHub Credentials
+
+Go to:
+
+Jenkins
+→ Manage Jenkins
+→ Credentials
+→ Global
+→ Add Credentials
+Add:
+Field	Vd	Username with password
+Username	DockerHub username
+Password	DockerHub password/tokenalue
+ID	dockerhub-creds
+
+IMPORTANT:
+
+Use ID exactly:
+
+dockerhub-creds
+
+because Jenkinsfile will use this.
+
+
+
+
+======================================
+credential for Rds database
+nadsoft-mysql
+user-admin
+pass - Admin123
+
