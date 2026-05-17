@@ -29,6 +29,12 @@ pipeline {
             }
         }
 
+        stage('Debug Workspace') {
+    steps {
+        sh 'ls -R'
+    }
+}
+
         stage('Build Backend Docker Image') {
             steps {
 
