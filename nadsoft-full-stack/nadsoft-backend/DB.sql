@@ -1,0 +1,18 @@
+CREATE DATABASE ;
+
+-- STUDENTS TABLE
+CREATE TABLE students (
+ id SERIAL PRIMARY KEY,
+ name VARCHAR(100),
+ email VARCHAR(100),
+ age INT
+);
+
+-- MARKS TABLE
+CREATE TABLE marks (
+ id SERIAL PRIMARY KEY,
+ student_id INT,
+ subject VARCHAR(50),
+ marks INT,
+ FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+);

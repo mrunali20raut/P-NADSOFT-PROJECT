@@ -1,0 +1,72 @@
+{
+  "info": {
+    "name": "Student API Manager",
+    "_postman_id": "12345678-1234-1234-1234-123456789012",
+    "description": "CRUD and Pagination APIs for Students",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Students",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/students"
+      }
+    },
+    {
+      "name": "Pagination Students",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/students?page=1&limit=5"
+      }
+    },
+    {
+      "name": "Get Student By ID",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/students/1"
+      }
+    },
+    {
+      "name": "Create Student",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"name\":\"Divya\",\n \"email\":\"divya@gmail.com\",\n \"age\":28\n}"
+        },
+        "url": "http://localhost:5000/students"
+      }
+    },
+    {
+      "name": "Update Student",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"name\":\"Divya Updated\",\n \"email\":\"divya@gmail.com\",\n \"age\":29\n}"
+        },
+        "url": "http://localhost:5000/students/1"
+      }
+    },
+    {
+      "name": "Delete Student",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:5000/students/1"
+      }
+    }
+  ]
+}
