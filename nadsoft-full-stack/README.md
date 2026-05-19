@@ -190,6 +190,33 @@ aws eks update-kubeconfig --region ap-south-1 --name <your-eks-cluster-name>
 aws eks update-kubeconfig --region ap-south-1 --name mr-cluster
 
 => kubectl get nodes
+look for details in chatgpt's page K8s Deployment Prerequisites
+
+21. Create Jenkins CI CD Job
+create jenkinsfile and kubernetes manifest files
+repo/
+│
+├── nadsoft-backend/
+├── nadsoft-frontend/
+├── k8/
+│   ├── namespace.yaml
+│   ├── frontend-deployment.yaml
+│   ├── frontend-service.yaml
+│   ├── backend-deployment.yaml
+│   ├── backend-service.yaml
+jenkinsfile
+
+
+22. Apply Kubernetes Files Manually First
+
+Before Jenkins automation,
+verify deployment manually.
+23. to check it first clone git repo inside jenkins server instance
+git clone <YOUR_GITHUB_REPO_URL>
+cd nadsoft-full-stack
+=> kubectl apply -f k8/
+24. Verify Deployment
+kubectl get all -n nadsoft
 
 
 
@@ -226,3 +253,131 @@ nadsoft-mysql
 user-admin
 pass - Admin123
 
+==================================
+25. Create AWS RDS MySQL Database
+Because backend deployment requires DB connection.
+we use:
+
+AWS RDS MySQL
+
+Benefits:
+
+✅ Managed database
+✅ Automated backups
+✅ Better production architecture
+✅ Persistent storage
+✅ High availability possible
+
+Why RDS Must Be Created First
+
+Your backend pod uses:
+
+DB_HOST
+DB_USER
+DB_PASSWORD
+DB_NAME
+
+Without RDS:
+backend pod will crash.
+
+26. Update backend deployment YAML with RDS endpoint.
+This Endpoint Becomes Your DB_HOST
+
+Update backend deployment YAML:
+
+- name: DB_HOST
+  value: nadsoft-mysql.c7abcxyz123.ap-south-1.rds.amazonaws.com
+
+
+27. push deployment.yml file to git 
+28. kubectl apply -f k8/
+29. From Jenkins server OR EKS management host:
+    Run:kubectl get nodes
+30. verify deployment From Jenkins server or EKS management host:
+    kubectl get all -n nadsoft
+    
+    You should see:
+✅ frontend pods
+✅ backend pods
+✅ services
+31. Check Logs
+kubectl logs -f deployment/backend-deployment -n nadsoft
+
+32. SSH Into Jenkins Server
+
+Go to project folder:
+
+cd P-NADSOFT-PROJECT/nadsoft-full-stack
+
+Login DockerHub
+
+docker login
+DockerHub username
+DockerHub password/token
+Step 3 — Build Backend Image
+docker build -t mrunali2010/nadsoft-backend:latest ./nadsoft-backend
+Step 4 — Push Backend Image
+docker push mrunali2010/nadsoft-backend:latest
+Step 5 — Build Frontend Image
+docker build -t mrunali2010/nadsoft-frontend:latest ./nadsoft-frontend
+Step 6 — Push Frontend Image
+docker push mrunali2010/nadsoft-frontend:latest
+Step 7 — Restart Kubernetes Deployments
+
+After images pushed:
+
+kubectl rollout restart deployment backend-deployment -n nadsoft
+
+kubectl rollout restart deployment frontend-deployment -n nadsoft
+Step 8 — Verify Pods
+kubectl get pods -n nadsoft
+
+Expected:
+
+Running
+
+instead of:
+
+ImagePullBackOff
+Step 9 — Check Frontend LoadBalancer
+
+You already got:
+
+a3bfbebedf78f450d84ad3dc6d90afd5-1090310502.ap-south-1.elb.amazonaws.com
+
+Once pods become Running:
+
+Open:
+
+http://a3bfbebedf78f450d84ad3dc6d90afd5-1090310502.ap-south-1.elb.amazonaws.com
+
+Your React app should open.
+=============================
+33. We will create:
+Final Production Jenkinsfile
+with stages:
+
+Checkout
+Build Backend
+Build Frontend
+Docker Login
+Push Images
+Deploy To Kubernetes
+Verify Deployment
+
+fully automated CI/CD.
+
+
+======================
+if needed
+with stages:
+
+Checkout
+Build Backend
+Build Frontend
+Docker Login
+Push Images
+Deploy To Kubernetes
+Verify Deployment
+
+fully automated CI/CD.
