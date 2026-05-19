@@ -370,14 +370,19 @@ fully automated CI/CD.
 
 ======================
 if needed
-with stages:
 
-Checkout
-Build Backend
-Build Frontend
-Docker Login
-Push Images
-Deploy To Kubernetes
-Verify Deployment
+. After running the CICD
+ loadbalancer will create because in yml file provided type: LoadBalancer
+Which will expose the application check for the DNS name in loadbalancer
+To access the application on browser use DNS name from loadbalancer/<context path>
+http://<LB-DNS>/<context-path>
+context path is war file name(this also available in dockerfile for java applications)
+or you can get it from command
+kubectl exec -it <pod-name> -- ls /usr/local/tomcat/webapps
 
-fully automated CI/CD.
+kubectl get pods
+kubectl get services
+
+cleanup steps
+Delete EKS Cluster FIRST Takes 10–15 minutes
+eksctl delete cluster --name mr-cluster --region ap-south-1
