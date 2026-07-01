@@ -7,6 +7,9 @@ pipeline {
         FRONTEND_IMAGE = 'mrunali2010/nadsoft-frontend'
         BACKEND_IMAGE = 'mrunali2010/nadsoft-backend'
         K8S_NAMESPACE = 'nadsoft'
+
+        // IMPORTANT FIX (kubeconfig path for Jenkins)
+        KUBECONFIG = "C:\\ProgramData\\Jenkins\\.kube\\config"
     }
 
     stages {
@@ -75,13 +78,15 @@ pipeline {
 
         stage('Deploy To Kubernetes') {
             steps {
-                bat """
-                kubectl apply -f k8/
+                dir('nadsoft-full-stack') {
+                    bat """
+                    kubectl apply -f k8/
 
-                kubectl rollout restart deployment backend-deployment -n ${env.K8S_NAMESPACE}
+                    kubectl rollout restart deployment backend-deployment -n ${env.K8S_NAMESPACE}
 
-                kubectl rollout restart deployment frontend-deployment -n ${env.K8S_NAMESPACE}
-                """
+                    kubectl rollout restart deployment frontend-deployment -n ${env.K8S_NAMESPACE}
+                    """
+                }
             }
         }
 
