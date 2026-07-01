@@ -21,7 +21,7 @@ spec:
       containers:
       - name: frontend
 
-        image: mrunali2010/nadsoft-frontend:latest
+        image: mrunali2010/nadsoft-frontend:v1
 
         ports:
         - containerPort: 3000

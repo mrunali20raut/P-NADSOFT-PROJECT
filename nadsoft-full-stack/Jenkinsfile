@@ -38,7 +38,7 @@ pipeline {
         stage('Build Backend Docker Image') {
             steps {
                 dir('nadsoft-full-stack') {
-                sh 'docker build -t $BACKEND_IMAGE:latest ./nadsoft-backend'
+                sh 'docker build -t $BACKEND_IMAGE:v1 ./nadsoft-backend'
                 
                 }
             }
@@ -48,7 +48,7 @@ pipeline {
             steps {
 
                 dir('nadsoft-full-stack') {
-                sh 'docker build -t $FRONTEND_IMAGE:latest ./nadsoft-frontend'
+                sh 'docker build -t $FRONTEND_IMAGE:v1 ./nadsoft-frontend'
                
                 }
             }
@@ -74,7 +74,7 @@ pipeline {
             steps {
 
                 sh '''
-                docker push $BACKEND_IMAGE:latest
+                docker push $BACKEND_IMAGE:v1
                 '''
             }
         }
@@ -83,7 +83,7 @@ pipeline {
             steps {
 
                 sh '''
-                docker push $FRONTEND_IMAGE:latest
+                docker push $FRONTEND_IMAGE:v1
                 '''
             }
         }

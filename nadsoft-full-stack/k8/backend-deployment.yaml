@@ -21,7 +21,7 @@ spec:
       containers:
       - name: backend
 
-        image: mrunali2010/nadsoft-backend:latest
+        image: mrunali2010/nadsoft-backend:v1
 
         ports:
         - containerPort: 5000
