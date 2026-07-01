@@ -97,10 +97,10 @@ pipeline {
 
     post {
         success {
-            echo 'CI/CD Pipeline Executed Successfully!'
+            echo "CI/CD Pipeline Executed Successfully!"
         }
         failure {
-            echo 'Pipeline Failed!'
+            echo "Pipeline Failed!"
         }
     }
 }
