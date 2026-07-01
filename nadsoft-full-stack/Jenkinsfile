@@ -3,13 +3,9 @@ pipeline {
     agent any
 
     environment {
-
         DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
-
         FRONTEND_IMAGE = 'mrunali2010/nadsoft-frontend'
-
         BACKEND_IMAGE = 'mrunali2010/nadsoft-backend'
-
         K8S_NAMESPACE = 'nadsoft'
     }
 
@@ -23,104 +19,87 @@ pipeline {
 
         stage('Clone Repository') {
             steps {
-
                 git branch: 'main',
                 url: 'https://github.com/mrunali20raut/P-NADSOFT-PROJECT.git'
             }
         }
 
         stage('Debug Workspace') {
-    steps {
-        bat "dir /s"
-    }
-}
+            steps {
+                bat "dir /s"
+            }
+        }
 
         stage('Build Backend Docker Image') {
             steps {
                 dir('nadsoft-full-stack') {
-                bat 'docker build -t $BACKEND_IMAGE:v1 ./nadsoft-backend'
-                
+                    bat "docker build -t ${env.BACKEND_IMAGE}:v1 ./nadsoft-backend"
                 }
             }
         }
 
         stage('Build Frontend Docker Image') {
             steps {
-
                 dir('nadsoft-full-stack') {
-                bat 'docker build -t $FRONTEND_IMAGE:v1 ./nadsoft-frontend'
-               
+                    bat "docker build -t ${env.FRONTEND_IMAGE}:v1 ./nadsoft-frontend"
                 }
             }
         }
 
         stage('DockerHub Login') {
             steps {
-
                 withCredentials([usernamePassword(
-                    credentialsId: "${DOCKERHUB_CREDENTIALS}",
+                    credentialsId: "${env.DOCKERHUB_CREDENTIALS}",
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
 
-                    bat '''
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    '''
+                    bat """
+                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                    """
                 }
             }
         }
 
         stage('Push Backend Docker Image') {
             steps {
-
-                bat '''
-                docker push $BACKEND_IMAGE:v1
-                '''
+                bat "docker push ${env.BACKEND_IMAGE}:v1"
             }
         }
 
         stage('Push Frontend Docker Image') {
             steps {
-
-                bat '''
-                docker push $FRONTEND_IMAGE:v1
-                '''
+                bat "docker push ${env.FRONTEND_IMAGE}:v1"
             }
         }
 
         stage('Deploy To Kubernetes') {
             steps {
-
-                bat '''
+                bat """
                 kubectl apply -f k8/
 
-                kubectl rollout restart deployment backend-deployment -n $K8S_NAMESPACE
+                kubectl rollout restart deployment backend-deployment -n ${env.K8S_NAMESPACE}
 
-                kubectl rollout restart deployment frontend-deployment -n $K8S_NAMESPACE
-                '''
+                kubectl rollout restart deployment frontend-deployment -n ${env.K8S_NAMESPACE}
+                """
             }
         }
 
         stage('Verify Deployment') {
             steps {
-
-                bat '''
-                kubectl get pods -n $K8S_NAMESPACE
-                kubectl get svc -n $K8S_NAMESPACE
-                '''
+                bat """
+                kubectl get pods -n ${env.K8S_NAMESPACE}
+                kubectl get svc -n ${env.K8S_NAMESPACE}
+                """
             }
         }
     }
 
     post {
-
         success {
-
             echo 'CI/CD Pipeline Executed Successfully!'
         }
-
         failure {
-
             echo 'Pipeline Failed!'
         }
     }
