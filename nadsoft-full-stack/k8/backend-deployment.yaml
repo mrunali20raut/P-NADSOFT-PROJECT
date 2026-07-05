@@ -28,13 +28,15 @@ spec:
 
         env:
         - name: DB_HOST
-          value: nadsoft-mysql.cxqaowkkep9x.ap-south-1.rds.amazonaws.com
+          value: mysql-service
+          # value: nadsoft-mysql.cxqaowkkep9x.ap-south-1.rds.amazonaws.com
 
         - name: DB_PORT
           value: "3306"
 
         - name: DB_USER
-          value: root
+          value: nadsoft
+          #value: root
 
         - name: DB_PASSWORD
           value: admin
