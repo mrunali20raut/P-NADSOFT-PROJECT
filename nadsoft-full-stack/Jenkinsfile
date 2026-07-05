@@ -81,7 +81,9 @@ pipeline {
             steps {
                 dir('nadsoft-full-stack') {
                     bat """
-                    kubectl apply -f k8/
+                    kubectl apply -f k8/namespace.yaml
+                    kubectl wait --for=condition=Active namespace/nadsoft --timeout=30s
+                    kubectl apply -n nadsoft -f k8/
 
                     kubectl rollout restart deployment backend-deployment -n ${env.K8S_NAMESPACE}
 
