@@ -9,7 +9,7 @@ pipeline {
         K8S_NAMESPACE = 'nadsoft'
 
         // IMPORTANT FIX (kubeconfig path for Jenkins)
-        KUBECONFIG = "C:\\ProgramData\\Jenkins\\.kube\\config"
+        KUBECONFIG = "C:\\Program Files\\Jenkins\\.kube\\config"
     }
 
     stages {
